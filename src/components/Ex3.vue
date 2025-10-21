@@ -9,7 +9,8 @@ export default {
             subject: '',
             entry: '',
             mood: '',
-            moods: ["Happy", "Sad", "Angry"]
+            moods: ["Happy", "Sad", "Angry"],
+            outputMsg: ''
         }
     }
     ,computed: {
@@ -27,7 +28,10 @@ export default {
         axios.get(`${this.baseUrl}/addPost`, {
             params: { subject: this.subject, entry: this.entry, mood: this.mood }
         })
-            .then(response => { console.log(response.data) })
+            .then(response => { 
+                console.log(response.data)
+                this.outputMsg = response.data.message;
+             })
             .catch(error => { console.log(error.message) })
     }
     }
@@ -55,7 +59,8 @@ export default {
 
         <br>
         <button @click="addPost">Submit New Post</button>
-
+        <br></br>
+        {{ outputMsg }}
         <hr> Click <a><router-link to="/ViewPosts/">here</router-link></a> to return to Main Page
 
     </div>
