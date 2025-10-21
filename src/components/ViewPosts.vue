@@ -1,5 +1,5 @@
 <script setup>
-    import axios from 'axios';
+import axios from 'axios';
 </script>
 
 <script>
@@ -16,8 +16,8 @@ export default {
     },
     computed: {
         baseUrl() {
-            if (window.location.hostname=='localhost')
-                return 'http://localhost:3000' 
+            if (window.location.hostname == 'localhost')
+                return 'http://localhost:3000'
             else {
                 const codespace_host = window.location.hostname.replace('5173', '3000')
                 return `https://${codespace_host}`;
@@ -36,10 +36,41 @@ export default {
     },
     methods: {
         editPost(id) {
-            
+            // for (post of this.posts){
+            //     if(post.id == id){
+            //         this.entry = post.entry
+            //         this.mood = post.mood
+            //         this.showEditPost = true
+            //         break
+            //     }
+            // }
+            this.entry = id.entry
+            this.mood = id.mood
+            this.editPostId = id.id
+            this.showEditPost = true
         },
         updatePost(event) {
-            
+            axios.post(`${this.baseUrl}/updatePost?id=${this.editPostId}`, {
+                'entry': this.entry, 'mood': this.mood
+            })
+                .then(response => {
+                    // this gets the data, which is an array, and pass the data to Vue instance's posts property
+                    axios.get(`${this.baseUrl}/posts`)
+                        .then(response => {
+                            // this gets the data, which is an array, and pass the data to Vue instance's posts property
+                            this.posts = response.data
+                        })
+                        .catch(error => {
+                            this.posts = [{ entry: 'There was an error: ' + error.message }]
+                        })
+                })
+                .catch(error => {
+                    this.posts = [{ entry: 'There was an error: ' + error.message }]
+                })
+            this.entry = ''
+            this.mood = ''
+            this.editPostId = ''
+            this.showEditPost = false
         }
     }
 }
@@ -61,7 +92,7 @@ export default {
                     <td>{{ post.id }}</td>
                     <td>{{ post.entry }}</td>
                     <td>{{ post.mood }}</td>
-                    <td><button>Edit</button></td>
+                    <td><button @click="editPost(post)">Edit</button></td>
                 </tr>
             </tbody>
 
@@ -70,7 +101,7 @@ export default {
         <div id="editPost" v-if="showEditPost">
             <h3>Edit Post</h3>
             <div id="postContent" class="mx-3">
-                <form>
+                <form @submit.prevent="updatePost($event)">
                     <div class="mb-3">
                         <label for="entry" class="form-label">Entry</label>
                         <textarea id="entry" class="form-control" v-model="entry" required></textarea>

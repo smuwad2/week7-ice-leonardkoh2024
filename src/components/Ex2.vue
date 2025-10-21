@@ -31,5 +31,5 @@
             <button @click="deleteItem(index)"> Delete! </button>
         </li>
     </ul>
-    <input v-model="input"></input><button @click="addItem()"> Add! </button>
+    <input type="text" v-model="input"></input><button @click="addItem()"> Add! </button>
 </template>
